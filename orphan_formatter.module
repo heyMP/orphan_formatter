@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @file orphan_formatter.module
+ * TODO: Enter file description here.
+ */
+
+/**
+ * Implements hook_field_formatter_info_alter().
+ */
+function orphan_formatter_field_formatter_info_alter(&$info) {
+  // added to ALL formatters...
+  foreach ($info as &$formatter) {
+    $formatter['settings']['orphan_fixer'] = '';
+  }
+}
+
+/**
+ * Implements hook_field_formatter_settings_form_alter().
+ */
+function orphan_formatter_field_formatter_settings_form_alter(&$settings_form, $context) {
+  $display = $context['instance']['display'][$context['view_mode']];
+  $settings = $display['settings'];
+
+  $settings_form['orphan_fixer'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Orphan Fixer'),
+    '#default_value' => $settings['orphan_fixer'],
+  );
+}
+
+/**
+ * Implements hook_field_attach_view_alter().
+ */
+function orphan_formatter_field_attach_view_alter(&$output, $context) {
+  foreach (element_children($output) as $field_name) {
+    $element = &$output[$field_name];
+    //watchdog('formatter',print_r($element,TRUE));
+    $instance = field_info_instance($element['#entity_type'], $field_name, $element['#bundle']);
+    $display = isset($instance['display'][$context['view_mode']]) ? $instance['display'][$context['view_mode']] : $instance['display']['default'];
+    $settings = $display['settings'];
+    // Get field type.
+    $field_type = $instance['widget']['type'];
+    // Get formatter settings.
+
+    foreach ($element['#items'] as $delta => $item) {
+      if (isset($settings['orphan_fixer']) && $settings['orphan_fixer'] == TRUE) {
+        $value = $item['value'];
+
+        $element[$delta]['#markup'] = _orphan_formatter($value);
+      }
+    }
+  }
+}
+
+function _orphan_formatter($text,$minWords = 3) {
+  $return = $text;
+  $arr = explode(' ',$text);
+  if(count($arr) >= $minWords) {
+    $arr[count($arr) - 2].= '&nbsp;'.$arr[count($arr) - 1];
+    array_pop($arr);
+    $return = implode(' ',$arr);
+  }
+  return $return;
+}
