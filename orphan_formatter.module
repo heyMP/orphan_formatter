@@ -48,18 +48,29 @@ function orphan_formatter_field_attach_view_alter(&$output, $context) {
         $value = $item['value'];
 
         $element[$delta]['#markup'] = _orphan_formatter($value);
+        kpr($element[$delta]['#markup']);
       }
     }
   }
 }
 
-function _orphan_formatter($text,$minWords = 3) {
+/**
+ * Implements hook_filter_info().
+ */
+function orphan_formatter_filter_info() {
+  $filters['orphan_filter'] = array(
+    'title' => t('Orphan filter'),
+    'description' => t('Fix the orphans'),
+    'process callback' => '_orphan_formatter',
+  );
+  return $filters;
+}
+
+function _orphan_formatter($text, $filter, $format, $langcode, $cache, $cache_id) {
   $return = $text;
   $arr = explode(' ',$text);
-  if(count($arr) >= $minWords) {
-    $arr[count($arr) - 2].= '&nbsp;'.$arr[count($arr) - 1];
-    array_pop($arr);
-    $return = implode(' ',$arr);
-  }
+  $arr[count($arr) - 2].= '&nbsp;'.$arr[count($arr) - 1];
+  array_pop($arr);
+  $return = implode(' ',$arr);
   return $return;
 }
