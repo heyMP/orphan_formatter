@@ -48,7 +48,6 @@ function orphan_formatter_field_attach_view_alter(&$output, $context) {
         $value = $item['value'];
 
         $element[$delta]['#markup'] = _orphan_formatter($value);
-        kpr($element[$delta]['#markup']);
       }
     }
   }
@@ -60,7 +59,7 @@ function orphan_formatter_field_attach_view_alter(&$output, $context) {
 function orphan_formatter_filter_info() {
   $filters['orphan_filter'] = array(
     'title' => t('Orphan filter'),
-    'description' => t('Fix the orphans'),
+    'description' => t('Attempts to fix single word orphans in a text field.'),
     'process callback' => '_orphan_formatter',
   );
   return $filters;
