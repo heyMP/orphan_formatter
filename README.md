@@ -8,3 +8,7 @@ Enable module via admin/modules
 
 ##Usage
 This modules adds an 'Orphan Fixer' checkbox under the field formatter settings on the 'Manage Display' page.
+
+--or--
+
+Add the 'Orphan filter' as a text filter under '/admin/config/content/formats'.
